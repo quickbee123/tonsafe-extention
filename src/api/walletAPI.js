@@ -4,31 +4,39 @@ const CryptoJS = require("crypto-js");
 const wallet={
 
     async isPasswordSet() {
-      if(!storage.get('masterPassword'))
-        return true;
       
-      return false;  
+      var db = await storage.getDb();
+      const password = await db.get('options', 'MasterPassword');
+
+      return password ? true : false; 
     },
     async setPassword(pass) {
-      const seed = CryptoJS.lib.WordArray(16).toString();
-      const hashedpass = CryptoJS.SHA512(pass+seed);
-      const value ={
-          'hashedpass': hashedpass,
-          'seed'      : seed
-      };
-      storage.set('masterPassword',value);
+      var db = await storage.getDb();
+      
+      const seed = CryptoJS.lib.WordArray.random(16).toString();
+      const hashedpass = CryptoJS.SHA512(pass+seed).toString();
+      const obj ={'hashedPassword': hashedpass,'seed': seed};
+
+      await db.put('options', {name:'MasterPassword',value:obj});
 
     },
     async checkPassword(pass) {
-        const storedPass = storage.get('masterPassword');
-        const seed = storedPass.seed;
-        const hashedpass = CryptoJS.SHA512(pass+seed);
+        var db = await storage.getDb();
+        const storedPassword = await db.get('options', 'MasterPassword');
+
+        const seed = storedPassword.value.seed;
+
+        const inputHashedPass = CryptoJS.SHA512(pass+seed).toString();
         
-        if(storedPass===hashedpass)
+        if(storedPassword.value.hashedPassword===inputHashedPass)
         return true;
 
         return false;
   
+    },
+    async fetchWallets(){
+      var db = await storage.getDb();
+      return await db.getAll('wallets');
     }
 
 

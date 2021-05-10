@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "TON Safe",
+  "name": "TON safe",
   "description": "wallet",
   "version": "1.0",
   "permissions": [

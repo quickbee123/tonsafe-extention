@@ -69,9 +69,41 @@ const wallet={
       return wallet;
 
     },
+    async getBalance(server,address){
+      const result = (await tonAPI.getAccountData(server,address));
+      var balance;
+      if(!result)
+      balance =0;
+      else
+      balance = this.convertFromNano(result.balance);
+      balance = this.convertFromNano(balance);
+      console.log(balance); 
+    },
     async decryptSecretKey(enc_key,password){
       var dec_key = CryptoJS.AES.decrypt(enc_key,password);  
       return dec_key.toString(CryptoJS.enc.Utf8); 
+    },
+    convertToNano(value) {
+      const splitted = value.split('.');
+      const intPart = BigInt(splitted[0]) * BigInt('1000000000');
+      const decPart = BigInt(splitted.length > 1 ? `${splitted[1]}${'0'.repeat(9 - splitted[1].length)}` : '0');
+      return intPart + decPart;
+    },
+    convertFromNano(amountNano) {
+      const decimalNum=9;
+      const minDecimalNum = 3;
+      const amountBigInt = BigInt(amountNano);
+      const integer = amountBigInt / BigInt('1000000000');
+      const reminderStr = (amountBigInt % BigInt('1000000000')).toString();
+      const decimalPrependZerosNum = 9 - reminderStr.length;
+      const reminderRtrimedZeros = reminderStr.replace(/0+$/g, '');
+      const decimalStr = `${'0'.repeat(decimalPrependZerosNum)}${reminderRtrimedZeros}`;
+      const decimalCut = decimalStr.substr(0, decimalNum);
+      const decimalResult = minDecimalNum - decimalCut.length > 0
+        ? `${decimalCut}${'0'.repeat(minDecimalNum - decimalCut.length)}`
+        : decimalCut;
+      const integerFormatted = integer.toLocaleString();
+      return `${integerFormatted}.${decimalResult.substring(0, 3)}`;
     }
 
 

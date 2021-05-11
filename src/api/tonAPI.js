@@ -171,20 +171,18 @@ const tonAPI={
       async getAccountData(server,address) {
         try {
           var client = await ton.getClient(server);
-          return await client.net.query({"query": `
-            query {
-            accounts(
-                filter: {
-                id: {eq: "${address}"}
+          
+          const {result} = await client.net.query_collection({
+            collection: 'accounts',
+            filter: {
+                id: {
+                    eq: address
                 }
-            ) 
-            {
-                id
-                code_hash
-                boc
-            }
-            }
-      `});
+            },
+            result: 'acc_type balance(format: DEC) code'
+        });
+        console.log(result);
+        return result.length ? result[0] : null;
    
         }
         catch (error) {

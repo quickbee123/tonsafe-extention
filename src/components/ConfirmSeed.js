@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Form , Button } from 'react-bootstrap';
 import wallet from '../api/walletAPI';
+import BackButton from './BackButton';
 
 
 
@@ -51,6 +52,7 @@ render(){
 
     return(
         <>
+        <BackButton history={this.props.history}/>
          <Form>
         <Form.Group>
           <Form.Control type="text" placeholder="Enter Seed"  onChange={this.handleSeedChange}/>

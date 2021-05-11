@@ -14,6 +14,7 @@ class WalletMainPage extends Component{
         };
 
         this.goToAddWallet = this.goToAddWallet.bind(this);
+        
 
       }
 
@@ -30,12 +31,14 @@ class WalletMainPage extends Component{
         
       }  
 
+         
+
 render(){
 
     const list = this.state.wallets.map((wallet)=>{
         return(
             <div key={wallet.id}>
-                <WalletCard wallet={wallet} />
+                <WalletCard wallet={wallet} history={this.props.history} />
             </div>
         );
     });

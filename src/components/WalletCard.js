@@ -1,15 +1,26 @@
 import React, {Component} from 'react';
 import { Card , Button } from 'react-bootstrap';
 import wallet from '../api/walletAPI';
-import WalletCard from './WalletCard';
 
 
-class WalletMainPage extends Component{
+
+class WalletCard extends Component{
 
     constructor(props) {
         super(props);
+        this.goToSelectedWallet = this.goToSelectedWallet.bind(this);
 
       }
+
+      async goToSelectedWallet(){
+      
+        this.props.history.push({
+           pathname: '/wallet/wallet-info',
+           state: this.props.wallet
+       });
+   
+      
+    }
 
 render(){
 
@@ -20,7 +31,7 @@ render(){
             <Card.Text>
             {this.props.wallet.address}
             </Card.Text>
-            <Button variant="primary">Go to wallet</Button>
+            <Button variant="primary" onClick={this.goToSelectedWallet}>Go to wallet</Button>
         </Card.Body>
         </Card>
     );
@@ -30,4 +41,4 @@ render(){
 
 }
 
-export default WalletMainPage;
+export default WalletCard;

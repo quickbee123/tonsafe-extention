@@ -9,6 +9,7 @@ import CreateWallet from './components/CreateWallet';
 import ImportWallet from './components/ImportWallet';
 import ConfirmSeed from './components/ConfirmSeed';
 import AddWallet from './components/AddWallet';
+import WalletInfo from './components/WalletInfo';
 import { Container } from 'react-bootstrap';
 import { createBrowserHistory } from "../node_modules/react-router/node_modules/history";
 
@@ -48,6 +49,7 @@ function App() {
     <Container>
     <Router history={history}>
             <Switch>
+            <Route exact path='/wallet/wallet-info' component={WalletInfo} />
             <Route exact path='/wallet/import' component={ImportWallet} />
             <Route exact path='/wallet/create' component={CreateWallet} />
             <Route exact path='/wallet/confirm-seed' component={ConfirmSeed} />

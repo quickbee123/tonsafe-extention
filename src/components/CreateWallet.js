@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Card , Button } from 'react-bootstrap';
 import wallet from '../api/walletAPI';
+import BackButton from './BackButton';
 
 
 
@@ -32,6 +33,7 @@ render(){
 
     return(
         <>
+        <BackButton history={this.props.history}/>
          {this.state.seed}
          <Button variant="primary" onClick={this.gotToConfirmSeed}>
           Next

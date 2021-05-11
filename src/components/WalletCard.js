@@ -18,7 +18,7 @@ render(){
         <Card.Header as="h5">Wallet {this.props.wallet.id}</Card.Header>
         <Card.Body>
             <Card.Text>
-            With supporting text below as a natural lead-in to additional content.
+            {this.props.wallet.address}
             </Card.Text>
             <Button variant="primary">Go to wallet</Button>
         </Card.Body>

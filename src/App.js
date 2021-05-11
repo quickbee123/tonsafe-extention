@@ -5,6 +5,9 @@ import Login from './components/Login';
 import MasterPassword from './components/MasterPassword';
 import WalletMainPage from './components/WalletMainPage';
 import Header from './components/Header';
+import CreateWallet from './components/CreateWallet';
+import ImportWallet from './components/ImportWallet';
+import ConfirmSeed from './components/ConfirmSeed';
 import AddWallet from './components/AddWallet';
 import { Container } from 'react-bootstrap';
 import { createBrowserHistory } from "../node_modules/react-router/node_modules/history";
@@ -27,7 +30,7 @@ function App() {
     if(!passSet){
 
     console.log("pass not set");
-    history.push('/master');
+    history.push('/set-password');
     
     
     }
@@ -45,10 +48,13 @@ function App() {
     <Container>
     <Router history={history}>
             <Switch>
-            <Route exact path='/add-wallet' component={AddWallet} /> 
+            <Route exact path='/wallet/import' component={ImportWallet} />
+            <Route exact path='/wallet/create' component={CreateWallet} />
+            <Route exact path='/wallet/confirm-seed' component={ConfirmSeed} />
+            <Route exact path='/wallet/add' component={AddWallet} /> 
             <Route exact path='/wallet' component={WalletMainPage} /> 
             <Route exact path='/login' component={Login} /> 
-            <Route exact path='/master' component={MasterPassword} /> 
+            <Route exact path='/set-password' component={MasterPassword} /> 
             </Switch>
   
     </Router>

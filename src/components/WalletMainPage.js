@@ -20,13 +20,13 @@ class WalletMainPage extends Component{
       async componentDidMount(){
 
         const wallets = await wallet.fetchWallets();
-        this.setState({wallets});
+        this.setState({wallets:wallets});
 
     }
 
     async goToAddWallet(){
         
-        this.props.history.push('/add-wallet');
+        this.props.history.push('/wallet/add');
         
       }  
 

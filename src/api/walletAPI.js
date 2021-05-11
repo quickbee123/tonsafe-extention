@@ -1,4 +1,6 @@
 import storage from './storageAPI';
+import tonAPI from './tonAPI'
+import network from './networkAPI'
 const CryptoJS = require("crypto-js");
 
 const wallet={
@@ -37,6 +39,39 @@ const wallet={
     async fetchWallets(){
       var db = await storage.getDb();
       return await db.getAll('wallets');
+    },
+    async getNewSeed(){
+      
+      const server = network[0].server;
+      const seed = await tonAPI.generateSeed(server);
+      console.log(seed);
+      return seed;
+
+    },
+    async createNewWallet(seed,password){
+      
+      const server = network[0].server;
+      const keys = await tonAPI.convertSeedToKeys(server,seed);
+      const address = await tonAPI.getFutureAddress(server,keys);
+      var db = await storage.getDb();
+
+      var enc_key = CryptoJS.AES.encrypt(JSON.stringify(keys.secret),password).toString(); 
+
+      const wallet ={
+        address: address,
+        keys:{
+          public:keys.public,
+          secret:enc_key
+        }
+      };
+      await db.put('wallets',wallet);
+
+      return wallet;
+
+    },
+    async decryptSecretKey(enc_key,password){
+      var dec_key = CryptoJS.AES.decrypt(enc_key,password);  
+      return dec_key.toString(CryptoJS.enc.Utf8); 
     }
 
 

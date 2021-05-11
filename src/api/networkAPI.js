@@ -1,4 +1,4 @@
-const servers = [
+const network = [
     { id: 1,
       name: "Main Network",
       server: "https://main.ton.dev",
@@ -14,4 +14,4 @@ const servers = [
     }
 ]
 
-export default servers;
+export default network;

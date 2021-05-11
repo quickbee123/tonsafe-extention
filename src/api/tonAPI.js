@@ -1,120 +1,201 @@
-const { Account } = require("@tonclient/appkit");
-const { TonClient } = require("@tonclient/core");
+import multisigContractPackage from './contracts/safemultisig/SafeMultisigWallet.js';
+const { TonClient , accountForExecutorUninit,signerKeys,abiContract } = require("@tonclient/core");
 const { libWeb } = require("@tonclient/lib-web");
-const { multisigContractPackage } = require('../contracts/safemultisig/SafeMultisigWallet.json');
 
 
-const tonAPI={
-     
-    async setServer(server) {
-    
-    const serverDefault={
+function LibBridge(){
+TonClient.useBinaryLibrary(libWeb);
+}
+LibBridge();
+
+const ton={
+
     client: null,
-    server: server,
+    server: null,
     SEED_PHRASE_WORD_COUNT: 12,
     SEED_PHRASE_DICTIONARY_ENGLISH: 1,
-    HD_PATH: "m/44'/396'/0'/0/0"
-    
-    }
-    
-    const getClient= async()=>{
-        try {
-            if(!serverDefault.client){
-
-                TonClient.useBinaryLibrary(libWeb);
-                serverDefault.client = new TonClient({
-                network: {
-                    server_address: server
-                }
-
-            });
-
-            
+    HD_PATH: "m/44'/396'/0'/0/0",
+    async getClient(server) {
+        if (this.client===null || this.server!==server) {
+          this.server=server;
+          this.account=null;
+          this.client = new TonClient({
+            network: {
+                server_address: server
             }
-
-            return serverDefault.client;
-        }
-        catch (error) {
-            console.log(error);
-        }
-          
-    };
-
-    const generateSeed = async () => {
-        try {
-            var client = await getClient();
-            return await client.crypto.mnemonic_from_random({ 
-                dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, 
-                word_count: ton.SEED_PHRASE_WORD_COUNT 
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
-    };
-
-    const generateKeys = async (seed) => {
-        try {
-            var client = await getClient();
-
-            return await client.crypto.mnemonic_derive_sign_keys({ 
-                phrase, path: ton.HD_PATH, 
-                dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, 
-                word_count: ton.SEED_PHRASE_WORD_COUNT 
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
-    };
-
-
-
+        });
         
+      }
+      return this.client;
     }
-}
+    
+};
 
+const tonAPI={
 
-
-export default{
-    async newSeed(server){
-        await ton.setClientServer(server);
-        return await ton.client.crypto.mnemonic_from_random({ dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, word_count: ton.SEED_PHRASE_WORD_COUNT });
-    },  
-    async seedtoKeypair(server){
-        await ton.setClientServer(server);
-        return await ton.client.crypto.mnemonic_derive_sign_keys({ phrase, path: ton.HD_PATH, dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, word_count: ton.SEED_PHRASE_WORD_COUNT });
-    },  
-    async futureAddress(server,keys){
-        await ton.setClientServer(server);
-        const initParams={};
-        const abi=multisigContractPackage.abi;
-        const tvcInBase64=multisigContractPackage.tvcInBase64;
-        return (await client.contracts.getDeployData({
-            abi,
-            tvcInBase64,
-            initParams,
-            publicKeyHex: keys.public,
-            workchainId: 0,
-          })).address;
+    async generateSeed(server){
+        try {
+            var client = await ton.getClient(server);
+            return (await client.crypto.mnemonic_from_random({ 
+                dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, 
+                word_count: ton.SEED_PHRASE_WORD_COUNT 
+            })).phrase;
+        }
+        catch (error) {
+            console.log(error);
+        }
     },
-    async calcDeployfee(server,keys){
-        await ton.setClientServer(server);
-        const initParams={};
-        const constructorParams = { owners: [`0x${keys.public}`], reqConfirms: 1 };
-        return await client.contracts.calcDeployFees({
-            package: multisigContractPackage,
-            constructorParams,
-            initParams,
-            keys,
-            emulateBalance: true,
-            newaccount: true
-          });
-    },      
-    async acoountData(server,address){
-    await ton.setClientServer(server);
-    return await client.queries.accounts.query({id: {in: address}}, 'id, balance(format: DEC), code_hash, boc');     
-    }
-}
+    async convertSeedToKeys(server,seed){
+        try{
+            var client = await ton.getClient(server);
+            return await client.crypto.mnemonic_derive_sign_keys({ 
+                phrase: seed, 
+                path: ton.HD_PATH, 
+                dictionary: ton.SEED_PHRASE_DICTIONARY_ENGLISH, 
+                word_count: ton.SEED_PHRASE_WORD_COUNT 
+            });
+        }  
+        catch (error) {
+            console.log(error);
+        }  
+    }, 
+    async getFutureAddress(server,keys) {
+        try {
+          var client = await ton.getClient(server);
+          const {address} = await client.abi.encode_message(
+            {
+            abi: {
+                type: 'Contract',
+                value: multisigContractPackage.abi
+            },
+            deploy_set: {
+                tvc: multisigContractPackage.tvc,
+                initial_data: {}
+            },
+            call_set: {
+                function_name: 'constructor',
+                input: {
+                    owners: [`0x${keys.public}`],
+                    reqConfirms: 0
+                }
+            },
+            signer: {
+                type: 'Keys',
+                keys: keys
+            },
+            processing_try_index: 1
+            });
+            
+          return address;
+        }
+        catch (error) {
+            console.log(error);
+        }
+      },
+      async calculateDeployFees(server,keys) {
+        try {
+          var client = await ton.getClient(server);
+
+        const message = await client.abi.encode_message(
+            {
+            abi: {
+                type: 'Contract',
+                value: multisigContractPackage.abi
+            },
+            deploy_set: {
+                tvc: multisigContractPackage.tvc,
+                initial_data: {}
+            },
+            call_set: {
+                function_name: 'constructor',
+                input: {
+                    owners: [`0x${keys.public}`],
+                    reqConfirms: 0
+                }
+            },
+            signer: {
+                type: 'Keys',
+                keys: keys
+            },
+            processing_try_index: 1
+            });
+        
+        const result = await client.tvm.run_executor({
+            account: accountForExecutorUninit(),
+            abi: {
+                type: 'Contract',
+                value: multisigContractPackage.abi
+            },
+            message: message.message,
+        });
+        return result.fees;
+        }
+        catch (error) {
+            console.log(error);
+        }
+      },
+      async deployContract(server,keys){
+        try {
+            var client = await ton.getClient(server);
+            return await client.processing.process_message({
+                send_events: false,
+                message_encode_params: {
+                    abi: {
+                        type: 'Contract',
+                        value: multisigContractPackage.abi
+                    },
+                    deploy_set: {
+                        tvc: multisigContractPackage.tvc,
+                        initial_data: {}
+                    },
+                    call_set: {
+                        function_name: 'constructor',
+                        input: {  
+                            owners: [`0x${keys.public}`],
+                            reqConfirms: 1
+                        }
+                    },
+                    signer: {
+                        type: 'Keys',
+                        keys: keys
+                    },
+                    processing_try_index: 1
+                }
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+      },
+      async getAccountData(server,address) {
+        try {
+          var client = await ton.getClient(server);
+          return await client.net.query({"query": `
+            query {
+            accounts(
+                filter: {
+                id: {eq: "${address}"}
+                }
+            ) 
+            {
+                id
+                code_hash
+                boc
+            }
+            }
+      `});
+   
+        }
+        catch (error) {
+            console.log(error);
+        }
+      }
+
+
+
+}    
+    
+   
 
 export default tonAPI;

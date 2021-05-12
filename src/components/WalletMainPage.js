@@ -42,7 +42,7 @@ render(){
     const list = this.state.wallets.map((wallet)=>{
         return(
             <div key={wallet.id} >
-                <WalletCard wallet={wallet} history={this.props.history} network={this.state.network}/>
+                <WalletCard wallet={wallet} history={this.props.history} network={this.state.network} password={this.props.location.state.password}/>
             </div>
         );
     });

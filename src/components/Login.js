@@ -24,7 +24,12 @@ class Login extends Component{
         if (!passValid) {
             alert("Passwords incorrect");
         } else {
-            this.props.history.push('/wallet');
+            this.props.history.push({
+              pathname: '/wallet',
+              state: {
+                 password: password
+              }
+            });
             
         }
         

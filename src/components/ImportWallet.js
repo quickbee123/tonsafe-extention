@@ -37,7 +37,14 @@ class ImportWallet extends Component{
         } else {
             var response =await wallet.createNewWallet(this.state.input,this.state.password);
             if(response){             
-                 this.props.history.push('/wallet');
+                this.props.history.push(
+                    {
+                        pathname: '/wallet',
+                        state: {
+                           password: this.state.password
+                        }
+                      }
+                 );
              }
              else{
                  alert("Seed incorrect");

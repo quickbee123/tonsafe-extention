@@ -1,6 +1,7 @@
 import multisigContractPackage from './contracts/safemultisig/SafeMultisigWallet.js';
-const { TonClient , accountForExecutorUninit,signerKeys,abiContract } = require("@tonclient/core");
+const { TonClient , accountForExecutorUninit,signerKeys,abiContract, signerNone } = require("@tonclient/core");
 const { libWeb } = require("@tonclient/lib-web");
+const transferAbi = require('./contracts/Transfer.json');
 
 
 function LibBridge(){
@@ -167,6 +168,107 @@ const tonAPI={
             console.log(error);
         }
 
+      },
+      async sendTransaction(server,amount,address,recipient,comment,keys){
+        try{
+        var client = await ton.getClient(server);
+        const body = (await client.abi.encode_message_body({
+            abi: abiContract(transferAbi),
+            call_set: {
+                function_name: "transfer",
+                input:{
+                    comment: Buffer.from(comment).toString('hex')
+                }
+            },
+            is_internal: true,
+            signer: signerNone(),
+        })).body;
+
+            const submitTransactionParams = {
+                dest: recipient,
+                value: amount,
+                bounce: false,
+                allBalance: false,
+                payload: body
+            };
+
+
+            const params = {
+                send_events: false,
+                message_encode_params: {
+                    address,
+                    abi: {
+                        type: 'Contract',
+                        value: multisigContractPackage.abi
+                    },
+                    call_set: {
+                        function_name: 'submitTransaction',
+                        input: submitTransactionParams
+                    },
+
+                    signer: {
+                        type: 'Keys',
+                        keys: keys
+                    },
+                }
+            }
+            
+            const transactionInfo = await client.processing.process_message(params);
+        }
+        catch (error) {
+            console.log(error);
+        }
+      },
+      async calcTransactionFees(server,amount,address,recipient,comment,keys){
+        try{
+        var client = await ton.getClient(server);
+        const body = (await client.abi.encode_message_body({
+            abi: abiContract(transferAbi),
+            call_set: {
+                function_name: "transfer",
+                input:{
+                    comment: Buffer.from(comment).toString('hex')
+                }
+            },
+            is_internal: true,
+            signer: signerNone(),
+        })).body;
+
+            const submitTransactionParams = {
+                dest: recipient,
+                value: amount,
+                bounce: false,
+                allBalance: false,
+                payload: body
+            };
+
+
+            const params = {
+                send_events: false,
+                message_encode_params: {
+                    address,
+                    abi: {
+                        type: 'Contract',
+                        value: multisigContractPackage.abi
+                    },
+                    call_set: {
+                        function_name: 'submitTransaction',
+                        input: submitTransactionParams
+                    },
+
+                    signer: {
+                        type: 'Keys',
+                        keys: keys
+                    },
+                }
+            }
+            
+            const fees = (await client.tvm.run_executor(params)).fees;
+            return fees;
+        }
+        catch (error) {
+            console.log(error);
+        }
       },
       async getAccountData(server,address) {
         try {

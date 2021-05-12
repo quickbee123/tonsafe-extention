@@ -3,9 +3,11 @@ import { Row , Button } from 'react-bootstrap';
 import SendTokens from './SendTokens';
 import DeployWallet from './DeployWallet';
 import BackButton from './BackButton';
+import ReceiveTokens from './ReceiveTokens';
 import wallet from '../api/walletAPI';
 import NetworkDropdown from './NetworkDropdown';
 import network from '../api/networkAPI'
+import tonAPI from '../api/tonAPI';
 
 
 
@@ -15,19 +17,27 @@ class WalletInfo extends Component{
         super(props);
     
         this.state = {
-          address: '',
+          wallet:{
+            address:''
+          },
+          transFees: '0.000',
           balance: '0.000',
           networkId: '0',
+          deployFee: '0',
           deployed: false,
           modalShow: false,
-          deployShow: false
+          deployShow: false,
+          addressShow: false
           
         };
 
         this.updateData = this.updateData.bind(this);
         this.setModalShow = this.setModalShow.bind(this);
         this.setDeployShow = this.setDeployShow.bind(this);
+        this.setAddressShow = this.setAddressShow.bind(this);
         this.deployWallet = this.deployWallet.bind(this);
+        this.sendTransaction = this.sendTransaction.bind(this);
+        this.setTransFee = this.setTransFee.bind(this);
         
 
       }
@@ -38,11 +48,12 @@ class WalletInfo extends Component{
         console.log(networkId);
         this.setState({networkId:networkId},()=>{
 
-          this.setState({ address :this.props.location.state.address},()=>{
+          this.setState({ wallet :this.props.location.state},()=>{
             this.updateData();
             });
 
         });
+        
         
         
 
@@ -50,13 +61,16 @@ class WalletInfo extends Component{
 
      async updateData(){
         
-        var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.address);
+        var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.wallet.address);
         this.setState(
           {
             balance: data.balance,
             deployed: data.deployed
         }
         );
+        
+        const fee = await wallet.getDeployFee(network[this.state.networkId].server,this.state.wallet.keys,this.state.wallet.password);
+        this.setState({ deployFee :fee});
         
    }
 
@@ -82,10 +96,23 @@ class WalletInfo extends Component{
 
     }
 
+    async setAddressShow(val){
+
+         
+      this.setState({ addressShow :val});
+  
+      }
+
     async deployWallet(){
 
-            
-      this.setState({deployed:true});
+      if(this.state.balance>=this.state.deployFee){
+        await wallet.deployWallet(network[this.state.networkId].server,this.state.wallet.keys,this.state.wallet.password);
+        this.setState({deployed:true});
+      }
+      else{
+       alert("Insufficient Balance");
+      }
+      
       
     
     }
@@ -98,6 +125,23 @@ class WalletInfo extends Component{
           await wallet.setSelectedNetwork(id);   
     
     }
+
+    async sendTransaction(address,amount,message){
+      
+          
+         if((amount+this.state.transFees)>=this.state.balance){
+            await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.wallet.address,address,message,this.state.wallet.keys,this.state.wallet.password);
+         }
+         else{
+          alert("Insufficient Balance");
+         }
+
+}
+
+   async setTransFee(address,amount,message){
+     var fee = await tonAPI.calcTransactionFees(network[this.state.networkId].server,amount,this.state.wallet.address,address,message,this.state.wallet.keys,this.state.wallet.password)
+    this.setState({transFees:fee});
+   }
 
     
       
@@ -124,7 +168,7 @@ render(){
           {this.state.balance}  {network[this.state.networkId].coinName}
           </Row>
           <Row className="justify-content-center">
-          <Button variant="primary" className="mx-1"  onClick={() => this.setModalShow(true)}>
+          <Button variant="primary" className="mx-1"  onClick={() => this.setAddressShow(true)}>
             Receive
           </Button>
           <Button variant="primary" className="mx-1 px-4" onClick={() => this.setModalShow(true)}>
@@ -134,11 +178,20 @@ render(){
           <SendTokens
             show={this.state.modalShow}
             onHide={() => this.setModalShow(false)}
+            send={(address,amount,message)=>{this.sendTransaction(address,amount,message)}}
+            setFee={(address,amount,message)=>{this.setTransFee(address,amount,message)}}
+            fee={this.state.transFees}
           />
           <DeployWallet
             show={this.state.deployShow}
             onHide={() => this.setDeployShow(false)}
-            deploy={this.state.deployWallet}
+            deploy={()=>{this.deployWallet();this.setDeployShow(false);}}
+            deployFee={this.state.deployFee}
+          />
+          <ReceiveTokens
+            show={this.state.addressShow}
+            onHide={() => this.setAddressShow(false)}
+            address={this.state.wallet.address}
           />
         </>
     );

@@ -1,7 +1,7 @@
 import { Modal , Button, Form } from 'react-bootstrap';
 import React, {Component} from 'react';
 
-class DeployWallet extends Component{
+class ReceiveTokens extends Component{
 
     constructor(props) {
         super(props);
@@ -20,19 +20,15 @@ render(){
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Deploy
+          <Modal.Title id="contained-modal-title-vcenter ">
+            Receive Tokens
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-            You need to deploy your wallet first.<br/>
-            Fee &#8776; {this.props.deployFee} 
+        <Modal.Body className="text-muted">
+            {this.props.address.substr(0,25 )+"...."}<Button variant="success" onClick={() => {navigator.clipboard.writeText(this.props.address);this.props.onHide()}}>copy</Button>
         </Modal.Body>
         <Modal.Footer>
         <Button onClick={this.props.onHide}>Close</Button>
-        <Button variant="primary" onClick={this.props.deploy}>
-                Deploy
-            </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -40,4 +36,4 @@ render(){
 
 }
 
-export default DeployWallet;
+export default ReceiveTokens;

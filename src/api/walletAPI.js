@@ -67,7 +67,7 @@ const wallet={
       const keys = await tonAPI.convertSeedToKeys(server,seed);
       const address = await tonAPI.getFutureAddress(server,keys);
       var db = await storage.getDb();
-
+      console.log(keys.secret);
       var enc_key = CryptoJS.AES.encrypt(JSON.stringify(keys.secret),password).toString(); 
 
       const wallet ={
@@ -82,6 +82,7 @@ const wallet={
       return wallet;
 
     },
+    
     async getAccountData(server,address){
       var data={
         balance: '',
@@ -110,6 +111,46 @@ const wallet={
       return false;
       else
       return true;
+    },
+    async getDeployFee(server,keys,password){
+      
+      var secret = await this.decryptSecretKey(keys.secret,password);
+      secret = secret.replace(/['"]+/g, '');
+      keys.secret = secret;
+      var fees = (await tonAPI.calculateDeployFees(server,keys)).total_account_fees;
+      fees = this.convertFromNano(fees);
+      return fees;
+
+    },
+    async sendTransaction(server,amount,address,recipient,comment,keys,password){
+      
+      amount=this.convertToNano(amount);
+      var secret = await this.decryptSecretKey(keys.secret,password);
+      secret = secret.replace(/['"]+/g, '');
+      keys.secret = secret;
+      await tonAPI.sendTransaction(server,amount,address,recipient,comment,keys);
+
+    },
+    async calcTransactionFee(server,amount,address,recipient,comment,keys,password){
+      
+      amount=this.convertToNano(amount);
+      var secret = await this.decryptSecretKey(keys.secret,password);
+      secret = secret.replace(/['"]+/g, '');
+      keys.secret = secret;
+      var fees = await tonAPI.calcTransactionFees(server,amount,address,recipient,comment,keys);
+      fees = this.convertFromNano(fees);
+      return fees;
+
+    },
+    async deployWallet(server,keys,password){
+      
+      var secret = await this.decryptSecretKey(keys.secret,password);
+      secret = secret.replace(/['"]+/g, '');  
+      keys.secret = secret;
+
+      const result = await tonAPI.deployContract(server,keys);
+      console.log(result);
+
     },
     async decryptSecretKey(enc_key,password){
       var dec_key = CryptoJS.AES.decrypt(enc_key,password);  

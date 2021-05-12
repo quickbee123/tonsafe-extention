@@ -37,7 +37,14 @@ class ConfirmSeed extends Component{
         } else {
             if(this.state.input === this.props.location.state.seed){
                 await wallet.createNewWallet(this.state.input,this.state.password);
-                 this.props.history.push('/wallet');
+                 this.props.history.push(
+                    {
+                        pathname: '/wallet',
+                        state: {
+                           password: this.state.password
+                        }
+                      }
+                 );
              }
              else{
                  alert("Seed incorrect");
@@ -59,7 +66,7 @@ render(){
           <Form.Control as="textarea" rows={3} placeholder="Enter Seed"  onChange={this.handleSeedChange}/>
         </Form.Group>
         <Form.Group>
-          <Form.Control type="text" placeholder="Enter Master Password"  onChange={this.handlePasswordChange}/>
+          <Form.Control type="password" placeholder="Enter Master Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
 
         <Button variant="secondary" block onClick={this.checkSeed}>

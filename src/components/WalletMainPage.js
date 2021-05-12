@@ -4,13 +4,15 @@ import wallet from '../api/walletAPI';
 import WalletCard from './WalletCard';
 
 
+
 class WalletMainPage extends Component{
 
     constructor(props) {
         super(props);
     
         this.state = {
-          wallets: []
+          wallets: [],
+          network: ''
         };
 
         this.goToAddWallet = this.goToAddWallet.bind(this);
@@ -20,8 +22,10 @@ class WalletMainPage extends Component{
 
       async componentDidMount(){
 
-        const wallets = await wallet.fetchWallets();
+        var wallets = await wallet.fetchWallets();
+        
         this.setState({wallets:wallets});
+        
 
     }
 
@@ -37,16 +41,16 @@ render(){
 
     const list = this.state.wallets.map((wallet)=>{
         return(
-            <div key={wallet.id}>
-                <WalletCard wallet={wallet} history={this.props.history} />
+            <div key={wallet.id} >
+                <WalletCard wallet={wallet} history={this.props.history} network={this.state.network}/>
             </div>
         );
     });
 
     return(
         <>
+          <Button variant="info" block onClick={this.goToAddWallet} className="mb-2">Add wallet</Button>
           {list}
-          <Button variant="primary" block onClick={this.goToAddWallet}>Add wallet</Button>
         </>
     );
 }

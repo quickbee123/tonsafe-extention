@@ -53,18 +53,20 @@ render(){
     return(
         <>
         <BackButton history={this.props.history}/>
-         <Form>
+        <div className="vertical-align">
+         <Form className="w-100">
         <Form.Group>
-          <Form.Control type="text" placeholder="Enter Seed"  onChange={this.handleSeedChange}/>
+          <Form.Control as="textarea" rows={3} placeholder="Enter Seed"  onChange={this.handleSeedChange}/>
         </Form.Group>
         <Form.Group>
           <Form.Control type="text" placeholder="Enter Master Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
 
-        <Button variant="primary" onClick={this.checkSeed}>
+        <Button variant="secondary" block onClick={this.checkSeed}>
           Create Wallet
         </Button>
-      </Form>
+        </Form>
+        </div>
         </>
     );
 }

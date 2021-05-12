@@ -46,7 +46,7 @@ function App() {
   return (
     <>
     <Header/>
-    <Container>
+    <Container style={{paddingTop:"15px"}}>
     <Router history={history}>
             <Switch>
             <Route exact path='/wallet/wallet-info' component={WalletInfo} />

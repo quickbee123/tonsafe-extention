@@ -26,12 +26,12 @@ render(){
 
     return(
         <Card>
-        <Card.Header as="h5">Wallet {this.props.wallet.id}</Card.Header>
+        <Card.Header as="h5" variant="secondary">Wallet {this.props.wallet.id}</Card.Header>
         <Card.Body>
             <Card.Text>
             {this.props.wallet.address}
             </Card.Text>
-            <Button variant="primary" onClick={this.goToSelectedWallet}>Go to wallet</Button>
+            <Button variant="secondary" onClick={this.goToSelectedWallet}>Go to wallet</Button>
         </Card.Body>
         </Card>
     );

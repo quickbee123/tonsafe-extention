@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Card , Button } from 'react-bootstrap';
+import { Form , Button } from 'react-bootstrap';
 import wallet from '../api/walletAPI';
 import BackButton from './BackButton';
 
@@ -34,10 +34,18 @@ render(){
     return(
         <>
         <BackButton history={this.props.history}/>
-         {this.state.seed}
-         <Button variant="primary" onClick={this.gotToConfirmSeed}>
+        <div className="vertical-align">
+         <Form className="w-100">
+        <Form.Group>
+          <Form.Control as="textarea" rows={3}  placeholder={this.state.seed} readOnly/>
+        </Form.Group>
+
+        <Button variant="secondary" block onClick={this.gotToConfirmSeed}>
           Next
         </Button>
+         </Form>
+         
+        </div>
         </>
     );
 }

@@ -13,3 +13,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.container,#root{
+  height:100%;
+}
+
+.vertical-align{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Card , Button } from 'react-bootstrap';
+import { Row , Button } from 'react-bootstrap';
 import BackButton from './BackButton';
 import wallet from '../api/walletAPI';
 import WalletCard from './WalletCard';
@@ -31,8 +31,16 @@ render(){
     return(
         <>
           <BackButton history={this.props.history}/>
-          <Button variant="primary" block onClick={this.importWallet}>Import wallet</Button>
-          <Button variant="primary" block onClick={this.createWallet}>Create wallet</Button>
+          <div className="vertical-align">
+          <div className="w-100">    
+          <Row>
+          <Button variant="secondary" block onClick={this.importWallet} className="m-2">Import wallet</Button>
+          </Row>
+          <Row>
+          <Button variant="secondary" block onClick={this.createWallet} className="m-2">Create wallet</Button>
+          </Row>
+          </div>
+          </div>
         </>
     );
 }

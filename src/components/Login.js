@@ -38,15 +38,17 @@ class Login extends Component{
 render(){
 
     return(
-        <Form>
+      <div className="vertical-align">
+        <Form className="w-100">
         <Form.Group controlId="formBasicPassword">
           <Form.Control type="password" placeholder="Enter Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
 
-        <Button variant="primary" onClick={this.checkPass}>
+        <Button variant="secondary" block onClick={this.checkPass}>
           Login
         </Button>
-      </Form>
+       </Form>
+      </div>
     );
 }
 

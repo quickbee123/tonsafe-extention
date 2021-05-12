@@ -38,19 +38,21 @@ class MasterPassword extends Component{
 render(){
 
     return(
+      <div className="vertical-align">
         <Form>
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group controlId="formBasicPassword"  className="w-100">
           <Form.Control type="password" placeholder="Enter Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
       
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group controlId="formBasicPassword"  className="w-100">
           <Form.Control type="password" placeholder="Confirm Password"  onChange={this.handleConfirmPassChange}/>
         </Form.Group>
 
-        <Button variant="primary" onClick={this.passSubmit}>
+        <Button variant="primary" onClick={this.passSubmit}  className="w-100">
           Submit
         </Button>
-      </Form>
+        </Form>
+      </div>
     );
 }
 

@@ -1,12 +1,12 @@
 const network = [
-    { id: 1,
+    { id: 0,
       name: "Main Network",
       server: "https://main.ton.dev",
       explorer: "https://ton.live",
       coinName: "CRYSTAL"
     },
     {
-      id: 2,
+      id: 1,
       name: "Test Network",
       server: "https://net.ton.dev",
       explorer: "https://net.ton.live",

@@ -20,6 +20,7 @@ const wallet={
       const obj ={'hashedPassword': hashedpass,'seed': seed};
 
       await db.put('options', {name:'MasterPassword',value:obj});
+      await this.setSelectedNetwork(network[0].id);
 
     },
     async checkPassword(pass) {
@@ -35,6 +36,18 @@ const wallet={
 
         return false;
   
+    },
+    async setSelectedNetwork(networkId) {
+      
+      var db = await storage.getDb();
+      await db.put('options', {name:'SelectedNetwork',value:networkId}); 
+    },
+    async getSelectedNetwork() {
+      
+      var db = await storage.getDb();
+      const network = (await db.get('options', 'SelectedNetwork')).value;
+
+      return network; 
     },
     async fetchWallets(){
       var db = await storage.getDb();
@@ -69,15 +82,34 @@ const wallet={
       return wallet;
 
     },
-    async getBalance(server,address){
-      const result = (await tonAPI.getAccountData(server,address));
+    async getAccountData(server,address){
+      var data={
+        balance: '',
+        deployed: ''
+      };
       var balance;
-      if(!result)
-      balance =0;
+      const result = (await tonAPI.getAccountData(server,address));
+
+      if(!result){
+        balance =0;
+        data.balance = this.convertFromNano(balance);
+      }   
       else
-      balance = this.convertFromNano(result.balance);
-      balance = this.convertFromNano(balance);
-      console.log(balance); 
+      data.balance = this.convertFromNano(result.balance);
+
+      if(!result || result.acc_type == 0)
+      data.deployed = false;
+      else
+      data.deployed = true;
+
+      return data;
+    },
+    async isDeployed(server,address){
+      const result = (await tonAPI.getAccountData(server,address));
+      if(!result || result.acc_type == 0)
+      return false;
+      else
+      return true;
     },
     async decryptSecretKey(enc_key,password){
       var dec_key = CryptoJS.AES.decrypt(enc_key,password);  

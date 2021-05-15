@@ -60,8 +60,7 @@ class WalletInfo extends Component{
 
      async updateData(){
         
-        console.log("update");
-        console.log(this.state.keys.secret); 
+        
         var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.address);
         this.setState(
           {
@@ -108,7 +107,10 @@ class WalletInfo extends Component{
 
       if(this.state.balance>=this.state.deployFee){
         await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
-        this.setState({deployed:true});
+        this.setState({deployed:true},()=>{
+            
+          this.updateData();
+        });
       }
       else{
        alert("Insufficient Balance");
@@ -131,8 +133,8 @@ class WalletInfo extends Component{
 
     async sendTransaction(address,amount,message){
       
-          
-         if((amount+this.state.transFees)>=this.state.balance){
+      console.log("reached");
+         if((amount+this.state.transFees)<=this.state.balance){
             await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
          }
          else{
@@ -142,8 +144,12 @@ class WalletInfo extends Component{
 }
 
    async setTransFee(address,amount,message){
-     var fee = await tonAPI.calcTransactionFees(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password)
+
+    if(address!='' && amount!='0'){
+      var fee = await wallet.calcTransactionFee(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
     this.setState({transFees:fee});
+    }
+     
    }
 
     

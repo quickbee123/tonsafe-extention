@@ -129,29 +129,43 @@ const wallet={
     },
     async sendTransaction(server,amount,address,recipient,comment,keys,password){
       
-      var walletKeys =keys;
+      var walletKeys ={
+        public: keys.public,
+        secret: keys.secret
+      };
       amount=this.convertToNano(amount);
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
       walletKeys.secret = secret;
+      console.log(walletKeys);
       await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
 
     },
     async calcTransactionFee(server,amount,address,recipient,comment,keys,password){
       
-      var walletKeys =keys;
-      amount=this.convertToNano(amount);
+      var walletKeys ={
+        public: keys.public,
+        secret: keys.secret
+      };
+      console.log(amount);
+      var amt=this.convertToNano(amount);
+      console.log(amt);
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
       walletKeys.secret = secret;
-      var fees = await tonAPI.calcTransactionFees(server,amount,address,recipient,comment,walletKeys);
+      console.log(walletKeys);
+      var fees = await tonAPI.calcTransactionFees(server,amt,address,recipient,comment,walletKeys);
       fees = this.convertFromNano(fees);
+      console.log(fees);
       return fees;
 
     },
     async deployWallet(server,keys,password){
       
-      var walletKeys =keys;
+      var walletKeys ={
+        public: keys.public,
+        secret: keys.secret
+      };
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');  
       walletKeys.secret = secret;
@@ -167,7 +181,7 @@ const wallet={
       const splitted = value.split('.');
       const intPart = BigInt(splitted[0]) * BigInt('1000000000');
       const decPart = BigInt(splitted.length > 1 ? `${splitted[1]}${'0'.repeat(9 - splitted[1].length)}` : '0');
-      return intPart + decPart;
+      return (intPart + decPart).toString();
     },
     convertFromNano(amountNano) {
       const decimalNum=9;

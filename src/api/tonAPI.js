@@ -201,6 +201,10 @@ const tonAPI={
                         type: 'Contract',
                         value: multisigContractPackage.abi
                     },
+                    deploy_set: {
+                        tvc: multisigContractPackage.tvc,
+                        initial_data: {}
+                    },
                     call_set: {
                         function_name: 'submitTransaction',
                         input: submitTransactionParams
@@ -210,6 +214,7 @@ const tonAPI={
                         type: 'Keys',
                         keys: keys
                     },
+                    processing_try_index: 1
                 }
             }
             
@@ -223,6 +228,7 @@ const tonAPI={
         try{
         var client = await ton.getClient(server);
         const body = (await client.abi.encode_message_body({
+            address,
             abi: abiContract(transferAbi),
             call_set: {
                 function_name: "transfer",
@@ -242,14 +248,16 @@ const tonAPI={
                 payload: body
             };
 
-
+            
             const params = {
-                send_events: false,
-                message_encode_params: {
                     address,
                     abi: {
                         type: 'Contract',
                         value: multisigContractPackage.abi
+                    },
+                    deploy_set: {
+                        tvc: multisigContractPackage.tvc,
+                        initial_data: {}
                     },
                     call_set: {
                         function_name: 'submitTransaction',
@@ -260,10 +268,38 @@ const tonAPI={
                         type: 'Keys',
                         keys: keys
                     },
-                }
+                    processing_try_index: 1
+                
             }
-            
-            const fees = (await client.tvm.run_executor(params)).fees;
+
+            const {result} = await client.net.query_collection({
+                collection: 'accounts',
+                filter: {
+                    id: {
+                        eq: address
+                    }
+                },
+                result: 'boc'
+            });
+
+            const boc = result[0].boc;
+            console.log("hii");
+            const message = (await client.abi.encode_message(params));
+            console.log("hii");
+            const result2 = await client.tvm.run_executor({
+                account: {
+                    type: 'Account',
+                    boc: boc,
+                    unlimited_balance: true
+                },
+                abi: {
+                    type: 'Contract',
+                    value: multisigContractPackage.abi
+                },
+                message: message.message,
+            });
+            console.log(result2);
+            const fees= result2.fees.total_account_fees;
             return fees;
         }
         catch (error) {

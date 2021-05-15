@@ -14,6 +14,7 @@ class SendTokens extends Component{
         this.handleAddressChange = this.handleAddressChange.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
         this.handleAmountChange = this.handleAmountChange.bind(this);
+        this.send = this.send.bind(this);
       }
 
       handleAddressChange(e){
@@ -29,6 +30,7 @@ class SendTokens extends Component{
         this.props.setFee(this.state.address,this.state.amount,this.state.message);
       }
       async send(){
+        console.log("started");
         this.props.send(this.state.address,this.state.amount,this.state.message)
       }
 

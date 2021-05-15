@@ -7,7 +7,7 @@ class Header extends Component{
 render(){
 
     return(
-        <Navbar bg="dark" variant="dark" style={{postion:"absolute"}}>
+        <Navbar bg="dark" variant="dark" className="navbar-fixed-top" style={{postion:"absolute"}}>
         <Navbar.Brand >
         TON Safe
         </Navbar.Brand>

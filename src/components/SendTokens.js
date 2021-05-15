@@ -30,7 +30,7 @@ class SendTokens extends Component{
         this.props.setFee(this.state.address,this.state.amount,this.state.message);
       }
       async send(){
-        console.log("started");
+        
         this.props.send(this.state.address,this.state.amount,this.state.message)
       }
 

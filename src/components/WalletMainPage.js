@@ -41,7 +41,7 @@ render(){
 
     const list = this.state.wallets.map((wallet)=>{
         return(
-            <div key={wallet.id} >
+            <div key={wallet.id} className="py-2">
                 <WalletCard wallet={wallet} history={this.props.history} network={this.state.network} password={this.props.location.state.password}/>
             </div>
         );

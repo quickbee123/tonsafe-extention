@@ -218,7 +218,8 @@ const tonAPI={
                 }
             }
             
-            const transactionInfo = await client.processing.process_message(params);
+            return await client.processing.process_message(params);
+            
         }
         catch (error) {
             console.log(error);
@@ -283,9 +284,9 @@ const tonAPI={
             });
 
             const boc = result[0].boc;
-            console.log("hii");
+           
             const message = (await client.abi.encode_message(params));
-            console.log("hii");
+            
             const result2 = await client.tvm.run_executor({
                 account: {
                     type: 'Account',
@@ -298,7 +299,7 @@ const tonAPI={
                 },
                 message: message.message,
             });
-            console.log(result2);
+            
             const fees= result2.fees.total_account_fees;
             return fees;
         }

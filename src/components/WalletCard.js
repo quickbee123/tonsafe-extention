@@ -26,7 +26,7 @@ class WalletCard extends Component{
 render(){
 
     return(
-        <Card>
+        <Card >
         <Card.Header as="h5" className="bg-dark text-white">Wallet {this.props.wallet.id}</Card.Header>
         <Card.Body>
             <Card.Text className="test-muted" readOnly>

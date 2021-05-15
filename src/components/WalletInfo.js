@@ -105,7 +105,8 @@ class WalletInfo extends Component{
 
     async deployWallet(){
 
-      if(this.state.balance>=this.state.deployFee){
+      if(10>=this.state.deployFee){
+        this.setDeployShow(false);
         await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
         this.setState({deployed:true},()=>{
             
@@ -133,9 +134,11 @@ class WalletInfo extends Component{
 
     async sendTransaction(address,amount,message){
       
-      console.log("reached");
+      
          if((amount+this.state.transFees)<=this.state.balance){
+           this.setAddressShow(false);
             await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
+            this.updateData();
          }
          else{
           alert("Insufficient Balance");

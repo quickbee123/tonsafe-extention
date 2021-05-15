@@ -26,17 +26,17 @@ function App() {
     async function checkPassSetBefore(){
 
       var passSet =await wallet.isPasswordSet();
-      console.log(passSet);
+      
 
     if(!passSet){
 
-    console.log("pass not set");
+    
     history.push('/set-password');
     
     
     }
     else{
-    console.log("pass set");
+    
     history.push('/login');
     }
   }
@@ -46,7 +46,7 @@ function App() {
   return (
     <>
     <Header/>
-    <Container style={{paddingTop:"15px"}}>
+    <Container style={{paddingTop:"15px"}} className="scroll">
     <Router history={history}>
             <Switch>
             <Route exact path='/wallet/wallet-info' component={WalletInfo} />

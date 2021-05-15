@@ -57,7 +57,7 @@ const wallet={
       
       const server = network[0].server;
       const seed = await tonAPI.generateSeed(server);
-      console.log(seed);
+      
       return seed;
 
     },
@@ -67,7 +67,7 @@ const wallet={
       const keys = await tonAPI.convertSeedToKeys(server,seed);
       const address = await tonAPI.getFutureAddress(server,keys);
       var db = await storage.getDb();
-      console.log(keys.secret);
+      
       var enc_key = CryptoJS.AES.encrypt(JSON.stringify(keys.secret),password).toString(); 
 
       const wallet ={
@@ -77,7 +77,7 @@ const wallet={
           secret:enc_key
         }
       };
-      console.log(wallet);
+      
       await db.put('wallets',wallet);
 
       return wallet;
@@ -137,8 +137,9 @@ const wallet={
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
       walletKeys.secret = secret;
-      console.log(walletKeys);
-      await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
+      
+      const result = await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
+      console.group(result);
 
     },
     async calcTransactionFee(server,amount,address,recipient,comment,keys,password){
@@ -147,16 +148,16 @@ const wallet={
         public: keys.public,
         secret: keys.secret
       };
-      console.log(amount);
+      
       var amt=this.convertToNano(amount);
-      console.log(amt);
+     
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
       walletKeys.secret = secret;
-      console.log(walletKeys);
+     
       var fees = await tonAPI.calcTransactionFees(server,amt,address,recipient,comment,walletKeys);
       fees = this.convertFromNano(fees);
-      console.log(fees);
+      
       return fees;
 
     },
@@ -169,8 +170,8 @@ const wallet={
       var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');  
       walletKeys.secret = secret;
-      const result = await tonAPI.deployContract(server,walletKeys);
-      console.log(result);
+      return await tonAPI.deployContract(server,walletKeys);
+      
 
     },
     async decryptSecretKey(enc_key,password){

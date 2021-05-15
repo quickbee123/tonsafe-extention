@@ -7,6 +7,7 @@ html,body {
   -moz-osx-font-smoothing: grayscale;
   width: 350px;
   height: 500px;
+
 }
 
 code {
@@ -24,3 +25,29 @@ code {
   justify-content: center;
   align-items: center;
 }
+
+.scroll{
+  overflow-y: scroll;
+}
+
+.scroll::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  
+  .scroll::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  
+  .scroll::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+  
+  
+  .scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+
+

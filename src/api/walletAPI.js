@@ -77,6 +77,7 @@ const wallet={
           secret:enc_key
         }
       };
+      console.log(wallet);
       await db.put('wallets',wallet);
 
       return wallet;
@@ -114,41 +115,47 @@ const wallet={
     },
     async getDeployFee(server,keys,password){
       
-      var secret = await this.decryptSecretKey(keys.secret,password);
+      var walletKeys ={
+        public: keys.public,
+        secret: keys.secret
+      };
+      var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
-      keys.secret = secret;
-      var fees = (await tonAPI.calculateDeployFees(server,keys)).total_account_fees;
+      walletKeys.secret = secret;
+      var fees = (await tonAPI.calculateDeployFees(server,walletKeys)).total_account_fees;
       fees = this.convertFromNano(fees);
       return fees;
 
     },
     async sendTransaction(server,amount,address,recipient,comment,keys,password){
       
+      var walletKeys =keys;
       amount=this.convertToNano(amount);
-      var secret = await this.decryptSecretKey(keys.secret,password);
+      var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
-      keys.secret = secret;
-      await tonAPI.sendTransaction(server,amount,address,recipient,comment,keys);
+      walletKeys.secret = secret;
+      await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
 
     },
     async calcTransactionFee(server,amount,address,recipient,comment,keys,password){
       
+      var walletKeys =keys;
       amount=this.convertToNano(amount);
-      var secret = await this.decryptSecretKey(keys.secret,password);
+      var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');
-      keys.secret = secret;
-      var fees = await tonAPI.calcTransactionFees(server,amount,address,recipient,comment,keys);
+      walletKeys.secret = secret;
+      var fees = await tonAPI.calcTransactionFees(server,amount,address,recipient,comment,walletKeys);
       fees = this.convertFromNano(fees);
       return fees;
 
     },
     async deployWallet(server,keys,password){
       
-      var secret = await this.decryptSecretKey(keys.secret,password);
+      var walletKeys =keys;
+      var secret = await this.decryptSecretKey(walletKeys.secret,password);
       secret = secret.replace(/['"]+/g, '');  
-      keys.secret = secret;
-
-      const result = await tonAPI.deployContract(server,keys);
+      walletKeys.secret = secret;
+      const result = await tonAPI.deployContract(server,walletKeys);
       console.log(result);
 
     },

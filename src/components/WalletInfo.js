@@ -17,9 +17,9 @@ class WalletInfo extends Component{
         super(props);
     
         this.state = {
-          wallet:{
-            address:''
-          },
+          address:this.props.location.state.address,
+          keys:this.props.location.state.keys,
+          password:this.props.location.state.password,
           transFees: '0.000',
           balance: '0.000',
           networkId: '0',
@@ -45,12 +45,11 @@ class WalletInfo extends Component{
       async componentDidMount(){
           
         var networkId = await wallet.getSelectedNetwork();
-        console.log(networkId);
+        
         this.setState({networkId:networkId},()=>{
 
-          this.setState({ wallet :this.props.location.state},()=>{
             this.updateData();
-            });
+            
 
         });
         
@@ -61,7 +60,9 @@ class WalletInfo extends Component{
 
      async updateData(){
         
-        var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.wallet.address);
+        console.log("update");
+        console.log(this.state.keys.secret); 
+        var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.address);
         this.setState(
           {
             balance: data.balance,
@@ -69,7 +70,7 @@ class WalletInfo extends Component{
         }
         );
         
-        const fee = await wallet.getDeployFee(network[this.state.networkId].server,this.state.wallet.keys,this.state.wallet.password);
+        const fee = await wallet.getDeployFee(network[this.state.networkId].server,this.state.keys,this.state.password);
         this.setState({ deployFee :fee});
         
    }
@@ -106,7 +107,7 @@ class WalletInfo extends Component{
     async deployWallet(){
 
       if(this.state.balance>=this.state.deployFee){
-        await wallet.deployWallet(network[this.state.networkId].server,this.state.wallet.keys,this.state.wallet.password);
+        await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
         this.setState({deployed:true});
       }
       else{
@@ -119,10 +120,12 @@ class WalletInfo extends Component{
 
     async setNetwork(id){
       
+          await wallet.setSelectedNetwork(id); 
+          this.setState({networkId:id},()=>{
+            
+            this.updateData();
+          });
           
-       
-          this.setState({networkId:id});
-          await wallet.setSelectedNetwork(id);   
     
     }
 
@@ -130,7 +133,7 @@ class WalletInfo extends Component{
       
           
          if((amount+this.state.transFees)>=this.state.balance){
-            await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.wallet.address,address,message,this.state.wallet.keys,this.state.wallet.password);
+            await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
          }
          else{
           alert("Insufficient Balance");
@@ -139,7 +142,7 @@ class WalletInfo extends Component{
 }
 
    async setTransFee(address,amount,message){
-     var fee = await tonAPI.calcTransactionFees(network[this.state.networkId].server,amount,this.state.wallet.address,address,message,this.state.wallet.keys,this.state.wallet.password)
+     var fee = await tonAPI.calcTransactionFees(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password)
     this.setState({transFees:fee});
    }
 
@@ -191,7 +194,7 @@ render(){
           <ReceiveTokens
             show={this.state.addressShow}
             onHide={() => this.setAddressShow(false)}
-            address={this.state.wallet.address}
+            address={this.state.address}
           />
         </>
     );

@@ -105,7 +105,7 @@ class WalletInfo extends Component{
 
     async deployWallet(){
 
-      if(10>=this.state.deployFee){
+      if(this.state.balance>=this.state.deployFee){
         this.setDeployShow(false);
         await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
         this.setState({deployed:true},()=>{

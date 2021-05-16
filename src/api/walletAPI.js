@@ -142,8 +142,8 @@ const wallet={
       secret = secret.replace(/['"]+/g, '');
       walletKeys.secret = secret;
       
-      const result = await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
-      console.group(result);
+      return await tonAPI.sendTransaction(server,amount,address,recipient,comment,walletKeys);
+      
 
     },
     async calcTransactionFee(server,amount,address,recipient,comment,keys,password){
@@ -160,8 +160,10 @@ const wallet={
       walletKeys.secret = secret;
      
       var fees = await tonAPI.calcTransactionFees(server,amt,address,recipient,comment,walletKeys);
+      if(fees)
       fees = this.convertFromNano(fees);
-      
+      else
+      fees='0.000';
       return fees;
 
     },

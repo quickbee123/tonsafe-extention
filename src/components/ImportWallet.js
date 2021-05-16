@@ -11,7 +11,8 @@ class ImportWallet extends Component{
         super(props);
         this.state={
             input: '',
-            password:''
+            password:'',
+            error:''
         };
 
         this.handleSeedChange = this.handleSeedChange.bind(this);
@@ -33,10 +34,12 @@ class ImportWallet extends Component{
         var passValid =await wallet.checkPassword(this.state.password);
         
         if (!passValid) {
-            alert("Passwords incorrect");
+            
+            this.setState({error:'*Password incorrect'});
         } else {
             var response =await wallet.createNewWallet(this.state.input,this.state.password);
-            if(response){             
+            if(response){   
+                this.setState({error:''});          
                 this.props.history.push(
                     {
                         pathname: '/wallet',
@@ -47,7 +50,8 @@ class ImportWallet extends Component{
                  );
              }
              else{
-                 alert("Seed incorrect");
+                 
+                 this.setState({error:'*Seed incorrect'});
              }
             
         }
@@ -68,7 +72,9 @@ render(){
         <Form.Group>
           <Form.Control type="text" placeholder="Enter Master Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
-
+        <div className="error w-100 text-danger">
+          {this.state.error}
+        </div>
         <Button variant="secondary" block onClick={this.importWallet}>
           Create Wallet
         </Button>

@@ -29,7 +29,8 @@ class WalletInfo extends Component{
           deployed: false,
           modalShow: false,
           deployShow: false,
-          addressShow: false
+          addressShow: false,
+          error:''
           
         };
 
@@ -80,6 +81,7 @@ class WalletInfo extends Component{
 
    async setModalShow(val){
 
+         this.setState({error:''});
          if(val){
           if(this.state.deployed)
           this.setState({ modalShow :val});
@@ -95,14 +97,14 @@ class WalletInfo extends Component{
 
    async setDeployShow(val){
 
-         
+    this.setState({error:''});
     this.setState({ deployShow :val});
 
     }
 
     async setAddressShow(val){
 
-         
+      
       this.setState({ addressShow :val});
   
       }
@@ -110,15 +112,22 @@ class WalletInfo extends Component{
     async deployWallet(){
 
       if(this.state.balance>=this.state.deployFee){
-        this.setDeployShow(false);
-        await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
-        this.setState({deployed:true},()=>{
+        
+        const response = await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
+        if(response){
+          this.setState({deployed:true},()=>{
+            this.setDeployShow(false);
+            this.updateData();
             
-          this.updateData();
-        });
+          });
+        }
+        else{
+          this.setState({error:'*Error occured'});
+        }
+        
       }
       else{
-       alert("Insufficient Balance");
+        this.setState({error:'*Insufficient Balance'});
       }
       
       
@@ -142,12 +151,19 @@ class WalletInfo extends Component{
       
       
          if((amount+this.state.transFees)<=this.state.balance){
-           this.setAddressShow(false);
-            await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
-            this.updateData();
+           
+           const response = await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
+           if(response){    
+            this.setModalShow(false);
+              this.updateData();
+              
+          }
+          else{
+            this.setState({error:'*Error occured'});
+          }
          }
          else{
-          alert("Insufficient Balance");
+          this.setState({error:'*Insufficient Balance'});
          }
 
 }
@@ -202,12 +218,14 @@ render(){
             send={(address,amount,message)=>{this.sendTransaction(address,amount,message)}}
             setFee={(address,amount,message)=>{this.setTransFee(address,amount,message)}}
             fee={this.state.transFees}
+            error={this.state.error}
           />
           <DeployWallet
             show={this.state.deployShow}
             onHide={() => this.setDeployShow(false)}
             deploy={()=>{this.deployWallet();this.setDeployShow(false);}}
             deployFee={this.state.deployFee}
+            error={this.state.error}
           />
           <ReceiveTokens
             show={this.state.addressShow}

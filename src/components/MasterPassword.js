@@ -19,12 +19,22 @@ class MasterPassword extends Component{
   async passSubmit(){
     const { password, confirmPassword } = this.state;
 
-    if (password !== confirmPassword) {
-        alert("Passwords don't match");
-    } else {
-        await wallet.setPassword(this.state.password);
-        this.props.history.push('/login');
+    if(password.length()>=5){
+      if (password !== confirmPassword) {
+        this.setState({error:"*Passwords don't match"});
+      } else {
+        this.setState({error:""});
+          await wallet.setPassword(this.state.password);
+          this.props.history.push('/login');
+      }
+
     }
+    else{
+         
+      this.setState({error:'*Password must contain atleast 5 characters'});
+
+    }
+    
     
   }  
 
@@ -47,7 +57,9 @@ render(){
         <Form.Group controlId="formBasicPassword"  className="w-100">
           <Form.Control type="password" placeholder="Confirm Password"  onChange={this.handleConfirmPassChange}/>
         </Form.Group>
-
+        <div className="error w-100 text-danger">
+          {this.state.error}
+        </div>
         <Button variant="primary" onClick={this.passSubmit}  className="w-100">
           Submit
         </Button>

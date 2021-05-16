@@ -7,7 +7,7 @@ class Login extends Component{
 
     constructor(props) {
         super(props);
-        this.state = {password   : ''};
+        this.state = {password   : '',error:''};
     
         this.checkPass = this.checkPass.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -22,8 +22,9 @@ class Login extends Component{
         var passValid =await wallet.checkPassword(password);
         
         if (!passValid) {
-            alert("Passwords incorrect");
+          this.setState({error:'*Password incorrect'});
         } else {
+          this.setState({error:''});
             this.props.history.push({
               pathname: '/wallet',
               state: {
@@ -48,6 +49,10 @@ render(){
         <Form.Group controlId="formBasicPassword">
           <Form.Control type="password" placeholder="Enter Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
+
+        <div className="error w-100 text-danger">
+          {this.state.error}
+        </div>
 
         <Button variant="secondary" block onClick={this.checkPass}>
           Login

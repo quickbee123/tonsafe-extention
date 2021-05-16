@@ -69,7 +69,9 @@ render(){
                 <Form.Label>Message</Form.Label>
                 <Form.Control type="text" placeholder="Message" onChange={this.handleMessageChange}/>
             </Form.Group>
-            
+            <div className="error w-100 text-danger">
+            {this.props.error}
+            </div>
 
             
             </Form>

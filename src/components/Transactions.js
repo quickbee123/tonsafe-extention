@@ -38,13 +38,17 @@ render(){
             sign=-1;
             value=transaction.balance_delta*sign;
         }
-        value = (wallet.convertFromNano(value))*sign;
+        value = wallet.convertFromNano(value);
+        if(sign)
+        value='+'+value;
+        else
+        value='-'+value;
         return(
-            <div key={transaction.id} onClick={()=>{window.open(this.props.explorer+"/transactions/transactionDetails?id="+transaction.id, "_blank");}}  className="text-secondary p-3" style={transStyle}>
+            <div key={transaction.id} onClick={()=>{window.open(this.props.explorer+"/transactions/transactionDetails?id="+transaction.id, "_blank");}}  className="text-secondary py-3 w-100" style={transStyle}>
                 <div className="w-100 p-2">
                 
-                        <div className="d-inline-block">
-                        {"ID: "+transaction.id.substr(0,20)+"..."}
+                        <div className="d-inline-block float-left">
+                        {"ID: "+transaction.id.substr(0,20)+"...   "}
                         </div>
                         <div className="float-right font-weight-bold">
                         {value}

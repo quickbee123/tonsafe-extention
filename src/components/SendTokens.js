@@ -35,7 +35,10 @@ class SendTokens extends Component{
       }
 
 render(){
-
+      var load = '';
+    if(this.props.loading){
+      load='button--loading';
+    }
     return(
         <Modal
         {...this.props}
@@ -78,9 +81,10 @@ render(){
         </Modal.Body>
         <Modal.Footer>
         <Button onClick={this.props.onHide}>Close</Button>
-        <Button variant="primary" onClick={this.send}>
-                Send
-            </Button>
+        <Button variant="primary" className={load} disabled={this.props.loading} onClick={this.send} style={{position:"relative"}}>
+        <span class="button__text">Send</span>
+        
+          </Button>
         </Modal.Footer>
       </Modal>
     );

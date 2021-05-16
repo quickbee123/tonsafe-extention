@@ -30,6 +30,7 @@ class WalletInfo extends Component{
           modalShow: false,
           deployShow: false,
           addressShow: false,
+          loading: false,
           error:''
           
         };
@@ -111,11 +112,13 @@ class WalletInfo extends Component{
 
     async deployWallet(){
 
+      this.setState({loading:true});
       if(this.state.balance>=this.state.deployFee){
         
         const response = await wallet.deployWallet(network[this.state.networkId].server,this.state.keys,this.state.password);
         if(response){
           this.setState({deployed:true},()=>{
+            this.setState({loading:false});
             this.setDeployShow(false);
             this.updateData();
             
@@ -123,11 +126,13 @@ class WalletInfo extends Component{
         }
         else{
           this.setState({error:'*Error occured'});
+          this.setState({loading:false});
         }
         
       }
       else{
         this.setState({error:'*Insufficient Balance'});
+        this.setState({loading:false});
       }
       
       
@@ -149,21 +154,24 @@ class WalletInfo extends Component{
 
     async sendTransaction(address,amount,message){
       
-      
+      this.setState({loading:true});
          if((amount+this.state.transFees)<=this.state.balance){
            
            const response = await wallet.sendTransaction(network[this.state.networkId].server,amount,this.state.address,address,message,this.state.keys,this.state.password);
            if(response){    
+            this.setState({loading:false});
             this.setModalShow(false);
               this.updateData();
               
           }
           else{
             this.setState({error:'*Error occured'});
+            this.setState({loading:false});
           }
          }
          else{
           this.setState({error:'*Insufficient Balance'});
+          this.setState({loading:false});
          }
 
 }
@@ -219,13 +227,15 @@ render(){
             setFee={(address,amount,message)=>{this.setTransFee(address,amount,message)}}
             fee={this.state.transFees}
             error={this.state.error}
+            loading={this.state.loading}
           />
           <DeployWallet
             show={this.state.deployShow}
             onHide={() => this.setDeployShow(false)}
-            deploy={()=>{this.deployWallet();this.setDeployShow(false);}}
+            deploy={()=>{this.deployWallet();}}
             deployFee={this.state.deployFee}
             error={this.state.error}
+            loading={this.state.loading}
           />
           <ReceiveTokens
             show={this.state.addressShow}

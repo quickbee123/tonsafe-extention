@@ -19,7 +19,7 @@ class MasterPassword extends Component{
   async passSubmit(){
     const { password, confirmPassword } = this.state;
 
-    if(password.length()>=5){
+    if(password.length>=5){
       if (password !== confirmPassword) {
         this.setState({error:"*Passwords don't match"});
       } else {
@@ -49,7 +49,7 @@ render(){
 
     return(
       <div className="vertical-align">
-        <Form>
+        <Form className="w-100">
         <Form.Group controlId="formBasicPassword"  className="w-100">
           <Form.Control type="password" placeholder="Enter Password"  onChange={this.handlePasswordChange}/>
         </Form.Group>
@@ -60,7 +60,7 @@ render(){
         <div className="error w-100 text-danger">
           {this.state.error}
         </div>
-        <Button variant="primary" onClick={this.passSubmit}  className="w-100">
+        <Button variant="secondary" onClick={this.passSubmit}  className="w-100">
           Submit
         </Button>
         </Form>

@@ -53,6 +53,10 @@ const wallet={
       var db = await storage.getDb();
       return await db.getAll('wallets');
     },
+    async deleteWallet(key){
+      var db = await storage.getDb();
+      await db.delete('wallets', key);
+    },
     async getNewSeed(){
       
       const server = network[0].server;
@@ -174,6 +178,9 @@ const wallet={
       
 
     },
+    async getTransactions(server,address){
+      return await tonAPI.getTransactions(server,address);
+    },
     async decryptSecretKey(enc_key,password){
       var dec_key = CryptoJS.AES.decrypt(enc_key,password);  
       return dec_key.toString(CryptoJS.enc.Utf8); 
@@ -185,6 +192,7 @@ const wallet={
       return (intPart + decPart).toString();
     },
     convertFromNano(amountNano) {
+      console.log(amountNano);
       const decimalNum=9;
       const minDecimalNum = 3;
       const amountBigInt = BigInt(amountNano);

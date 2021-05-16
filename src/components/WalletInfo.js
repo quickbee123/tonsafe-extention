@@ -6,6 +6,7 @@ import BackButton from './BackButton';
 import ReceiveTokens from './ReceiveTokens';
 import wallet from '../api/walletAPI';
 import NetworkDropdown from './NetworkDropdown';
+import Transactions from './Transactions';
 import network from '../api/networkAPI'
 import tonAPI from '../api/tonAPI';
 
@@ -20,6 +21,7 @@ class WalletInfo extends Component{
           address:this.props.location.state.address,
           keys:this.props.location.state.keys,
           password:this.props.location.state.password,
+          trans:[],
           transFees: '0.000',
           balance: '0.000',
           networkId: '0',
@@ -60,7 +62,9 @@ class WalletInfo extends Component{
 
      async updateData(){
         
-        
+        var trans = await wallet.getTransactions(network[this.state.networkId].server,this.state.address);
+        this.setState({trans:trans});
+        console.log(trans);
         var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.address);
         this.setState(
           {
@@ -124,6 +128,8 @@ class WalletInfo extends Component{
     async setNetwork(id){
       
           await wallet.setSelectedNetwork(id); 
+          this.setState({balance:'0.000'});
+          this.setState({trans:[]});
           this.setState({networkId:id},()=>{
             
             this.updateData();
@@ -186,6 +192,9 @@ render(){
           <Button variant="primary" className="mx-1 px-4" onClick={() => this.setModalShow(true)}>
             Send
           </Button>
+          </Row>
+          <Row className="justify-content-center">
+            <Transactions trans={this.state.trans} explorer={network[this.state.networkId].explorer}/>
           </Row>
           <SendTokens
             show={this.state.modalShow}

@@ -7,7 +7,7 @@ class MasterPassword extends Component{
 
   constructor(props) {
     super(props);
-    this.state = {password   : '', confirmPassword: '' };
+    this.state = {password   : '', confirmPassword: '' ,error:''};
 
     this.passSubmit = this.passSubmit.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);

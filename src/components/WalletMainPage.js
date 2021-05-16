@@ -16,24 +16,39 @@ class WalletMainPage extends Component{
         };
 
         this.goToAddWallet = this.goToAddWallet.bind(this);
+        this.deleteWallet = this.deleteWallet.bind(this);
+        this.getWallets = this.getWallets.bind(this);
         
 
       }
 
       async componentDidMount(){
 
-        var wallets = await wallet.fetchWallets();
         
-        this.setState({wallets:wallets});
-        
+        this.getWallets();
 
     }
+
+    async getWallets(){
+        
+      var wallets = await wallet.fetchWallets();
+        
+      this.setState({wallets:wallets});
+      
+    } 
 
     async goToAddWallet(){
         
         this.props.history.push('/wallet/add');
         
       }  
+    async deleteWallet(id){
+      
+      await wallet.deleteWallet(id);
+      this.setState({wallets:[]},()=>{
+        this.getWallets();
+      });
+    }    
 
          
 
@@ -42,7 +57,7 @@ render(){
     const list = this.state.wallets.map((wallet)=>{
         return(
             <div key={wallet.id} className="py-2">
-                <WalletCard wallet={wallet} history={this.props.history} network={this.state.network} password={this.props.location.state.password}/>
+                <WalletCard wallet={wallet} delete={(id)=>{this.deleteWallet(id);}} history={this.props.history} network={this.state.network} password={this.props.location.state.password}/>
             </div>
         );
     });
@@ -50,7 +65,9 @@ render(){
     return(
         <>
           <Button variant="info" block onClick={this.goToAddWallet} className="mb-2">Add wallet</Button>
+          <div>
           {list}
+          </div>
         </>
     );
 }

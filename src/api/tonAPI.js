@@ -327,6 +327,28 @@ const tonAPI={
         catch (error) {
             console.log(error);
         }
+      },
+      async getTransactions(server,address) {
+        try {
+          var client = await ton.getClient(server);
+          const result = await client.net.query({"query": `
+          query {
+            transactions(
+              filter: {
+                account_addr: {eq: "${address}"}
+              }
+              orderBy: { path: "lt", direction: DESC }
+              
+            ) {
+              id, now, block_id, in_msg, workchain_id, balance_delta(format:DEC)
+            }
+          }
+          `});
+          
+          return result.result.data.transactions;
+        } catch (error) {
+            console.log(error);
+        }
       }
 
 

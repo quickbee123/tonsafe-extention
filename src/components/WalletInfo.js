@@ -66,7 +66,7 @@ class WalletInfo extends Component{
         
         var trans = await wallet.getTransactions(network[this.state.networkId].server,this.state.address);
         this.setState({trans:trans});
-        console.log(trans);
+       
         var data = await wallet.getAccountData(network[this.state.networkId].server,this.state.address);
         this.setState(
           {

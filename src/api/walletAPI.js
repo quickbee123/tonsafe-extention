@@ -193,11 +193,11 @@ const wallet={
       const decPart = BigInt(splitted.length > 1 ? `${splitted[1]}${'0'.repeat(9 - splitted[1].length)}` : '0');
       return (intPart + decPart).toString();
     },
-    convertFromNano(amountNano) {
-      console.log(amountNano);
+    convertFromNano(amount) {
+      
       const decimalNum=9;
       const minDecimalNum = 3;
-      const amountBigInt = BigInt(amountNano);
+      const amountBigInt = BigInt(amount);
       const integer = amountBigInt / BigInt('1000000000');
       const reminderStr = (amountBigInt % BigInt('1000000000')).toString();
       const decimalPrependZerosNum = 9 - reminderStr.length;

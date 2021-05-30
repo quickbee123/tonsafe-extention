@@ -1,5 +1,6 @@
 # Getting Started with TON Safe
 
+This extention is published on chrome web store - [Click here](https://chrome.google.com/webstore/detail/ton-safe/mekhpmkagmgolpepjcckpabogedimkee)
 
 
 ## Available Scripts

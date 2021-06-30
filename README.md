@@ -1,25 +1,41 @@
-# Getting Started with TON Safe
+# TON Safe Wallet
+
+Ton Results is an interface where we could check results of contests held by Free TON. This interface is also helpful in
+creating payout table for these contests.
 
 This extention is published on chrome web store - [Click here](https://chrome.google.com/webstore/detail/ton-safe/mekhpmkagmgolpepjcckpabogedimkee)
 
+## Installation and Setup Instructions
 
-## Available Scripts
+### Prerequisites
 
-In the project directory, you can run:
+- Install nodejs
+  ```
+  $ sudo apt install nodejs
+  ```
+
+- Install npm  
+  ```
+  $ sudo apt install npm
+  ```
+
+### Installation  
+
+- Install all packages
+  ```
+  $ npm install
+  ```
 
 
+###  Load Extension
 
-### `npm run build`
+- Build the app
+```
+$ npm run build
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-- Navigate to chrome://extensions
-- Expand the Developer dropdown menu and click “Load Unpacked Extension”
-- Navigate to the local folder containing the extension’s code and click Ok
-
-
+- To load the extension
+  - Navigate to chrome://extensions
+  - Expand the Developer dropdown menu and click “Load Unpacked Extension”
+  - Navigate to the local folder containing the extension’s code and click Ok
 
